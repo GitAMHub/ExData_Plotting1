@@ -1,33 +1,30 @@
-#Load the data to a variable called "df"
+#Load the data
 
-df <- read.table("df.csv",
-                 header=TRUE,
-                 sep=",")
+data_text <- read.csv("household_power_consumption.txt", header=T, sep=';', na.strings="?",                       nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data_text$Date <- as.Date(data_text$Date, format="%d/%m/%Y")
+data <- subset(data_text, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data_text)
+
+datetime <- paste(as.Date(data$Date), data$Time)
+data$Datetime <- as.POSIXct(datetime)
 
 
 #Plot the Plot3 of the exercise on the screen
 
-plot(df$Time, df$Sub_metering_1, type="l", col="black",
-     xlab="", ylab="Energy sub metering")
-lines(df$Time, df$Sub_metering_2, col="red")
-lines(df$Time, df$Sub_metering_3, col="blue")
-legend("topright",
-       col=c("black", "red", "blue"),
-       c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-       lty=1)
+with(data, {
+        plot(Sub_metering_1~Datetime, type="l",
+             ylab="Energy sub metering", xlab="")
+        lines(Sub_metering_2~Datetime,col='Red')
+        lines(Sub_metering_3~Datetime,col='Blue')
+})
+
+legend("topright",col=c("black","red","blue"),lty=1,lwd=2, 
+       legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 
 
 #Make the PNG "plot3" and save it to disk
 
-png("plot3.png", width=480, height=480)
-
-plot(df$Time, df$Sub_metering_1, type="l", col="black",
-     xlab="", ylab="Energy sub metering")
-lines(df$Time, df$Sub_metering_2, col="red")
-lines(df$Time, df$Sub_metering_3, col="blue")
-legend("topright",
-       col=c("black", "red", "blue"),
-       c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-       lty=1)
+dev.copy(png, file="plot3.png", height=480, width=480)
+dev.off()
 
 dev.off()

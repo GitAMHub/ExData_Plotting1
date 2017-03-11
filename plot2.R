@@ -1,24 +1,17 @@
-#Load the data to a variable called "df"
+#Selecciona los datos
 
-df <- read.table("df.csv",
-                 header=TRUE,
-                 sep=",")
+data_text <- read.csv("household_power_consumption.txt", header=T, sep=';', na.strings="?", nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data_text$Date <- as.Date(data_text$Date, format="%d/%m/%Y")
+data <- subset(data_text, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data_text)
 
+datetime <- paste(as.Date(data$Date), data$Time)
+data$Datetime <- as.POSIXct(datetime)
 
-#Plot the Plot2 of the exercise on the screen
+#Plot to the screen
 
-plot(df$Time, df$Global_active_power,
-     type="l",
-     xlab="",
-     ylab="Global Active Power (kilowatts)")
+plot(data$Global_active_power~data$Datetime, type="l", ylab="Global Active Power (kilowatts)", xlab="")
 
-#Make the PNG "plot2" and save it to disk
-
-png("plot2.png", width=480, height=480)
-
-plot(df$Time, df$Global_active_power,
-     type="l",
-     xlab="",
-     ylab="Global Active Power (kilowatts)")
-
+#Save the plot to disk
+dev.copy(png, file="plot2.png", height=480, width=480)
 dev.off()

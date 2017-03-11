@@ -1,62 +1,34 @@
-#Load the data to a variable called "df"
+#Load the data 
 
-df <- read.csv("df.csv",
-               header=TRUE,
-               sep=",")
+data_text <- read.csv("household_power_consumption.txt", header=T, sep=';', na.strings="?",                       nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
+data_text$Date <- as.Date(data_text$Date, format="%d/%m/%Y")
+data <- subset(data_text, subset=(Date >= "2007-02-01" & Date <= "2007-02-02"))
+rm(data_text)
+
+datetime <- paste(as.Date(data$Date), data$Time)
+data$Datetime <- as.POSIXct(datetime)
 
 #Plot the Plot1 of the exercise on the screen
 
-par(mfrow=c(2,2))
-# 1
-plot(df$Time, df$Global_active_power,
-     type="l",
-     xlab="",
-     ylab="Global Active Power")
-# 2
-plot(df$Time, df$Voltage, type="l",
-     xlab="datetime", ylab="Voltage")
-# 3
-plot(df$Time, df$Sub_metering_1, type="l", col="black",
-     xlab="", ylab="Energy sub metering")
-lines(df$Time, df$Sub_metering_2, col="red")
-lines(df$Time, df$Sub_metering_3, col="blue")
-legend("topright",
-       col=c("black", "red", "blue"),
-       c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-       lty=1,
-       box.lwd=0)
-# 4
-plot(df$Time, df$Global_reactive_power, type="n",
-     xlab="datetime", ylab="Global_reactive_power")
-lines(df$Time, df$Global_reactive_power)
+par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0))
+with(data, {
+        plot(Global_active_power~Datetime, type="l", 
+             ylab="Global Active Power", xlab="")
+        plot(Voltage~Datetime, type="l", 
+             ylab="Voltage", xlab="datetime")
+        plot(Sub_metering_1~Datetime, type="l", 
+             ylab="Energy sub metering", xlab="")
+        lines(Sub_metering_2~Datetime,col='Red')
+        lines(Sub_metering_3~Datetime,col='Blue')
+        legend("topright", col=c("black", "red", "blue"), lty=1, lwd=2, bty="n",
+               legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),cex=0.5)
+        plot(Global_reactive_power~Datetime, type="l", 
+             ylab="Global_reactive_power",xlab="datetime")
+})
 
 
 #Make the PNG "plot4" and save it to disk
 
-png("plot4.png", width=480, height=480)
 
-par(mfrow=c(2,2))
-# 1
-plot(df$Time, df$Global_active_power,
-     type="l",
-     xlab="",
-     ylab="Global Active Power")
-# 2
-plot(df$Time, df$Voltage, type="l",
-     xlab="datetime", ylab="Voltage")
-# 3
-plot(df$Time, df$Sub_metering_1, type="l", col="black",
-     xlab="", ylab="Energy sub metering")
-lines(df$Time, df$Sub_metering_2, col="red")
-lines(df$Time, df$Sub_metering_3, col="blue")
-legend("topright",
-       col=c("black", "red", "blue"),
-       c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
-       lty=1,
-       box.lwd=0)
-# 4
-plot(df$Time, df$Global_reactive_power, type="n",
-     xlab="datetime", ylab="Global_reactive_power")
-lines(df$Time, df$Global_reactive_power)
-
+dev.copy(png, file="plot4.png", height=480, width=480)
 dev.off()
